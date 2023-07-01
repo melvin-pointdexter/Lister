@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "37720915606",
+    "project_id": "gamelister-cfd34",
+    "storage_bucket": "gamelister-cfd34.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:37720915606:android:b498d0db60231539598cb7",
+        "android_client_info": {
+          "package_name": "com.example.lister"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "37720915606-akean3gngt8un4ag276fbe80jm2ebq8i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8ZXMbjZZ1V6z2o1YduoM9R4AdzhPNfKE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "37720915606-akean3gngt8un4ag276fbe80jm2ebq8i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
