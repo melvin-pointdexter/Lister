@@ -36,7 +36,7 @@ public class Game implements Parcelable {
         this.gameGenre = gameGenre;
     }
 
-    public String setGameReleaseDate() {
+    public String getGameReleaseDate() {
         return gameReleaseDate;
     }
 

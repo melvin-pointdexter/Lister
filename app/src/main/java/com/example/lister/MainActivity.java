@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import android.content.Intent;
@@ -30,19 +31,13 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    //String sampleText[]={"Hello World","Lorem Corpus", "Banana"};
-
-    //ELEMENTS
-    private Button buttonAddGame;
+    private Button buttonAddGame, buttonDeleteGame, buttonEditGame;
     private EditText gameTitle, gameGenre, gameReleaseDate, gameImage;
 
     private ListView mainList;
     private MainListAdapter adapter;
-
     public static ArrayList<Game> games;
-    //private ProductAdapter productAdapter;
 
-    //FIREBASE-FIRESTORE
     private FirebaseFirestore database = FirebaseFirestore.getInstance();
     public static final String KEY_GAME_TITLE = "gameTitle";
     public static final String KEY_GAME_GENRE = "gameGenre";
@@ -62,11 +57,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         gameImage = (EditText)findViewById(R.id.inputImage);
 
         buttonAddGame = (Button)findViewById(R.id.btnAddGame);
-        buttonAddGame.setOnClickListener(this);
+        buttonDeleteGame = (Button)findViewById(R.id.btnDeleteGame);
+        buttonEditGame = (Button)findViewById(R.id.btnEditGame);
 
-        //mainList = (ListView) findViewById(R.id.mainList);
-        //adapter = new MainListAdapter(getApplicationContext(),games);
-        //mainList.setAdapter(adapter);
+        buttonAddGame.setOnClickListener(this);
+        buttonDeleteGame.setOnClickListener(this);
+        buttonEditGame.setOnClickListener(this);
     }
     @Override
     public void onClick(View view) {
@@ -75,21 +71,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnAddGame:
                 createNewGame();
                 break;
-            //case R.id.btnDeleteGame:
-                //deleteGameById("1Pa16uOY5KrX4NHALa4w");
-                //break;
-            /*case R.id.get_all_products_btn:
-                getAllProducts();
+            case R.id.btnDeleteGame:
+                deleteGameById(gameTitle.getText().toString());
                 break;
-            case R.id.mainList:
-                getProductById("1Pa16uOY5KrX4NHALa4w");
+            case R.id.btnEditGame:
+                editGameById(gameTitle.getText().toString());
                 break;
-            case R.id.get_product_by_para_btn:
-                getProductByValue("iPad pro 12.9");
-                break;
-            case R.id.edit_product_btn:
-                editProductById("WPcoBu3jSH2dwFMYVl6B");
-                break;*/
         }
     }
 
@@ -97,7 +84,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         DocumentReference document = database.collection("games").document(gid);
         document
                 .update(
-                        "gameReleaseDate", "5900"
+                        "gameImage", gameImage.getText().toString(),
+                        "gameGenre", gameGenre.getText().toString(),
+                        "gameReleaseDate", gameReleaseDate.getText().toString()
                 )
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -108,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), "Error: " + e, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "ERROR: " + e, Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -125,15 +114,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), "Error: " + e, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "ERROR: " + e, Toast.LENGTH_LONG).show();
                     }
                 });
     }
 
     private void getGameById(String gid) {
-
-
-
         DocumentReference document = database
                 .collection("games")
                 .document(gid);
@@ -146,12 +132,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         if(task.isSuccessful()){
                             DocumentSnapshot documentSnapshot = task.getResult();
                             if(documentSnapshot.exists()){
-                                System.out.println(documentSnapshot.getId() + " ---> " + documentSnapshot.getData());
-                            } else {
-                                Toast.makeText(getApplicationContext(), "No doc for you", Toast.LENGTH_LONG).show();
+                                System.out.println(documentSnapshot.getId() + " -> " + documentSnapshot.getData());
+                            }
+                            else {
+                                Toast.makeText(getApplicationContext(), "Doc does not exist", Toast.LENGTH_LONG).show();
                             }
                         } else {
-                            Toast.makeText(getApplicationContext(), "Error: " + task.getException(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "ERROR: " + task.getException(), Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -169,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 System.out.println(document.getId() + " ---> " + document.getData());
                             }
                         }   else {
-                            Toast.makeText(getApplicationContext(), "Error: " + task.getException(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "ERROR: " + task.getException(), Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -205,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), "Error: " + e, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "ERROR: " + e, Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -229,11 +216,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             mainList = findViewById(R.id.mainList);
                             adapter = new MainListAdapter(getApplicationContext(),games);
                             mainList.setAdapter(adapter);
-                            //Intent intent = new Intent(getApplicationContext(), mainList.class);
-                            //intent.putParcelableArrayListExtra("list", games);
-                            //startActivity(intent);
+                            mainList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                public void onItemClick(AdapterView<?> adpView, View v, int position, long id){
+                                    Toast.makeText(MainActivity.this, "Test", Toast.LENGTH_LONG).show();
+                                    Intent myIntent = new Intent(MainActivity.this, DetailedItem.class);
+                                    myIntent.putExtra("key", games.get(position)); //Optional parameters
+                                    MainActivity.this.startActivity(myIntent);
+                                }
+                            });
                         } else {
-                            Toast.makeText(getApplicationContext(), "Error: " + task.getException(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "ERROR: " + task.getException(), Toast.LENGTH_LONG).show();
                         }
                     }
                 });

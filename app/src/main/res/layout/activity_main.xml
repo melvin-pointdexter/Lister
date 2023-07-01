@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Title" />
+            android:text="Title/gid" />
 
         <EditText
             android:id="@+id/inputGenre"
@@ -73,6 +73,13 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/red"
             android:text="Delete Game" />
+
+        <Button
+            android:id="@+id/btnEditGame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/green"
+            android:text="Edit Game" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

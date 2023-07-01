@@ -11,7 +11,6 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.List;
 
 //import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -53,7 +52,7 @@ public class MainListAdapter extends BaseAdapter {
         view = inflater.inflate(R.layout.activity_main_list,null);
         TextView txtTitle = (TextView) view.findViewById(R.id.itemTitle);
         TextView txtGenre = (TextView) view.findViewById(R.id.itemGenre);
-        ImageView imgView = (ImageView) view.findViewById(R.id.itemImage);
+        ImageView imgView = (ImageView) view.findViewById(R.id.detailImage);
         txtTitle.setText(gameList.get(position).getGameTitle());
         txtGenre.setText(gameList.get(position).getGameGenre());
         //imgView.setImageResource(R.drawable.ic_launcher_foreground);
