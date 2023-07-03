@@ -29,12 +29,20 @@
         app:layout_constraintTop_toBottomOf="@id/mainList">
 
         <EditText
+            android:id="@+id/inputGid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="Gid" />
+
+        <EditText
             android:id="@+id/inputTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Title/gid" />
+            android:text="Title" />
 
         <EditText
             android:id="@+id/inputGenre"
@@ -60,26 +68,55 @@
             android:inputType="textPersonName"
             android:text="Image" />
 
-        <Button
-            android:id="@+id/btnAddGame"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/orange"
-            android:text="Add Game" />
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btnDeleteGame"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/red"
-            android:text="Delete Game" />
+            <Button
+                android:id="@+id/btnGetByTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Get By Title"
+                app:backgroundTint="@color/teal_200" />
 
-        <Button
-            android:id="@+id/btnEditGame"
+            <Button
+                android:id="@+id/btnGetByGid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Get by GID"
+                app:backgroundTint="@color/teal_700" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/green"
-            android:text="Edit Game" />
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnAddGame"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/green"
+                android:text="Add Game" />
+
+            <Button
+                android:id="@+id/btnDeleteGame"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/red"
+                android:text="Delete Game" />
+
+            <Button
+                android:id="@+id/btnEditGame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/yellow"
+                android:text="Edit Game" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

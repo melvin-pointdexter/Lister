@@ -29,7 +29,7 @@ public class DetailedItem extends AppCompatActivity {
         detailGameReleaseDate.setText(game.getGameReleaseDate());
         Picasso.with(this)
                 .load(game.getGameImage())
-                .resize(80,80)
+                .resize(300,300)
                 .centerCrop()
                 .into(detailGameImage);
     }

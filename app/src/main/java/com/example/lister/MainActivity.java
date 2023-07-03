@@ -29,10 +29,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/* IDs to change around:
+* G1mAnt6XF2S0RV4IFz4E - Worms Armageddon
+* QN9zfqu44rIwbQAkILhY - Resident Evil
+* SuHIcTFj9xtZXMS0TENE - Counter Strike Condition Zero
+* WN9uowmX5MxjWXKySPkG - Just Cause 3
+* jEYFSkTalk1NTQxbNiWj - Deus Ex
+* xNF3M0OMLhMJXjPFTNX7 - Fallout 3
+*
+* Note to wervlad:
+* I am curious; Why did you choose to watch the repository?
+* Know that I won't do much and will delete this in two months.
+* Regardless, have a great day
+*  */
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private Button buttonAddGame, buttonDeleteGame, buttonEditGame;
-    private EditText gameTitle, gameGenre, gameReleaseDate, gameImage;
+    private Button buttonAddGame, buttonDeleteGame, buttonEditGame, buttonGetByTitle, buttonGetByGid;
+    private EditText gameTitle, gameGenre, gameReleaseDate, gameImage, gameId;
 
     private ListView mainList;
     private MainListAdapter adapter;
@@ -55,14 +69,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         gameGenre = (EditText)findViewById(R.id.inputGenre);
         gameReleaseDate = (EditText)findViewById(R.id.inputReleaseDate);
         gameImage = (EditText)findViewById(R.id.inputImage);
+        gameId = (EditText)findViewById(R.id.inputGid);
 
         buttonAddGame = (Button)findViewById(R.id.btnAddGame);
         buttonDeleteGame = (Button)findViewById(R.id.btnDeleteGame);
         buttonEditGame = (Button)findViewById(R.id.btnEditGame);
+        buttonGetByTitle = (Button)findViewById(R.id.btnGetByTitle);
+        buttonGetByGid = (Button)findViewById(R.id.btnGetByGid);
 
         buttonAddGame.setOnClickListener(this);
         buttonDeleteGame.setOnClickListener(this);
         buttonEditGame.setOnClickListener(this);
+        buttonGetByTitle.setOnClickListener(this);
+        buttonGetByGid.setOnClickListener(this);
     }
     @Override
     public void onClick(View view) {
@@ -75,15 +94,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 deleteGameById(gameTitle.getText().toString());
                 break;
             case R.id.btnEditGame:
-                editGameById(gameTitle.getText().toString());
+                editGameById(gameId.getText().toString());
+                break;
+            case R.id.btnGetByTitle:
+                getGameByTitle(gameId.getText().toString());
+                break;
+            case R.id.btnGetByGid:
+                getGameByGid(gameId.getText().toString());
                 break;
         }
     }
 
     private void editGameById(String gid) {
+        if (gid.contains("/") || gid.contentEquals("")){
+            Toast.makeText(getApplicationContext(), "Invalid gid", Toast.LENGTH_LONG).show();
+            return;
+        }
         DocumentReference document = database.collection("games").document(gid);
         document
                 .update(
+                        "gameTitle", gameTitle.getText().toString(),
                         "gameImage", gameImage.getText().toString(),
                         "gameGenre", gameGenre.getText().toString(),
                         "gameReleaseDate", gameReleaseDate.getText().toString()
@@ -103,12 +133,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void deleteGameById(String gid) {
+        if (gid.contains("/") || gid.contentEquals("")){
+            Toast.makeText(getApplicationContext(), "Invalid gid", Toast.LENGTH_LONG).show();
+            return;
+        }
         database.collection("games").document(gid)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        Toast.makeText(getApplicationContext(), "Game deleted", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Game deleted (if gid exists)", Toast.LENGTH_LONG).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -119,12 +153,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
     }
 
-    private void getGameById(String gid) {
-        DocumentReference document = database
+    private void getGameByGid(String gid) {
+        if (gid.contains("/") || gid.contentEquals("")){
+                Toast.makeText(getApplicationContext(), "Invalid gid", Toast.LENGTH_LONG).show();
+            return;
+        }
+        database
                 .collection("games")
-                .document(gid);
-
-        document
+                .document(gid)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
@@ -132,10 +168,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         if(task.isSuccessful()){
                             DocumentSnapshot documentSnapshot = task.getResult();
                             if(documentSnapshot.exists()){
-                                System.out.println(documentSnapshot.getId() + " -> " + documentSnapshot.getData());
+                                Game game = documentSnapshot.toObject(Game.class);
+
+                                Intent myIntent = new Intent(MainActivity.this, DetailedItem.class);
+                                myIntent.putExtra("key", game);
+                                MainActivity.this.startActivity(myIntent);
                             }
                             else {
-                                Toast.makeText(getApplicationContext(), "Doc does not exist", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "Game does not exist/ Invalid gid", Toast.LENGTH_LONG).show();
                             }
                         } else {
                             Toast.makeText(getApplicationContext(), "ERROR: " + task.getException(), Toast.LENGTH_LONG).show();
@@ -144,17 +184,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
     }
 
-    private void getGameByValue(String para) {
+    private void getGameByTitle(String title) {
         database.collection("games")
-                .whereEqualTo("gameTitle", para)
+                .whereEqualTo("gameTitle", title)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if(task.isSuccessful()){
+                            //If there are many games by the same Title, show one of them (instead of opening an activity (using intent) for every game)
+                            Game game=null;
+                            //= new Game("Error","Something went wrong","01/01/1970","https://upload.wikimedia.org/wikipedia/commons/7/7d/Question_opening-closing.svg");
                             for (QueryDocumentSnapshot document : task.getResult()){
                                 System.out.println(document.getId() + " ---> " + document.getData());
+                                game = document.toObject(Game.class);
                             }
+                            if (game==null){
+                                Toast.makeText(getApplicationContext(), "Game does not exist", Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                            Intent myIntent = new Intent(MainActivity.this, DetailedItem.class);
+                            myIntent.putExtra("key", game);
+                            MainActivity.this.startActivity(myIntent);
+
                         }   else {
                             Toast.makeText(getApplicationContext(), "ERROR: " + task.getException(), Toast.LENGTH_LONG).show();
                         }
@@ -218,9 +270,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             mainList.setAdapter(adapter);
                             mainList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 public void onItemClick(AdapterView<?> adpView, View v, int position, long id){
-                                    Toast.makeText(MainActivity.this, "Test", Toast.LENGTH_LONG).show();
                                     Intent myIntent = new Intent(MainActivity.this, DetailedItem.class);
-                                    myIntent.putExtra("key", games.get(position)); //Optional parameters
+                                    myIntent.putExtra("key", games.get(position));
                                     MainActivity.this.startActivity(myIntent);
                                 }
                             });
