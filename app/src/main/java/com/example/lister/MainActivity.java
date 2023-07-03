@@ -36,11 +36,6 @@ import java.util.Map;
 * WN9uowmX5MxjWXKySPkG - Just Cause 3
 * jEYFSkTalk1NTQxbNiWj - Deus Ex
 * xNF3M0OMLhMJXjPFTNX7 - Fallout 3
-*
-* Note to wervlad:
-* I am curious; Why did you choose to watch the repository?
-* Know that I won't do much and will delete this in two months.
-* Regardless, have a great day
 *  */
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
